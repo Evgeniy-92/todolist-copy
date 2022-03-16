@@ -1,11 +1,17 @@
 import React from "react";
-import {taskType} from "./App";
+import {filterValuesType, taskType} from "./App";
 
 type TodolistProps = {
     title: string
     tasks: Array<taskType>
+    deleteTaskHandler: (taskID: number) => void
+    changeFilter: (filter: filterValuesType) => void
 }
-export function Todolist({title, tasks}: TodolistProps) {
+export function Todolist({title, tasks, deleteTaskHandler, changeFilter}: TodolistProps) {
+
+    const changeFilerHandlerAll = () => {changeFilter('all')}
+    const changeFilerHandlerActive = () => {changeFilter('active')}
+    const changeFilerHandlerCompleted = () => {changeFilter('completed')}
 
     return (
         <div>
@@ -15,10 +21,16 @@ export function Todolist({title, tasks}: TodolistProps) {
                 <button>+</button>
             </div>
             <ul>
-                <li><input type="checkbox" checked={tasks[0].isDone}/>{tasks[0].taskName}</li>
-                <li><input type="checkbox" checked={tasks[1].isDone}/>{tasks[1].taskName}</li>
-                <li><input type="checkbox" checked={tasks[2].isDone}/>{tasks[2].taskName}</li>
+                {
+                    tasks.map(el => <li key={el.id}>
+                        <input type="checkbox" checked={el.isDone}/>{el.taskName}
+                        <button onClick={() => deleteTaskHandler(el.id)}>X</button>
+                    </li>)
+                }
             </ul>
+            <button onClick={changeFilerHandlerAll}>All</button>
+            <button onClick={changeFilerHandlerActive}>Active</button>
+            <button onClick={changeFilerHandlerCompleted}>Completed</button>
         </div>
     )
 }
