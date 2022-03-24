@@ -7,3 +7,10 @@ body {
 ul {
   list-style-type: none;
 }
+
+.error {
+  border: 2px solid #d50808;
+}
+.errorMessage {
+  color: #d50808;
+}

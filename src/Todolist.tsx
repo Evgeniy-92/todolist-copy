@@ -1,36 +1,78 @@
-import React from "react";
+import React, {ChangeEvent, KeyboardEvent, useState} from "react";
 import {filterValuesType, taskType} from "./App";
 
 type TodolistProps = {
     title: string
     tasks: Array<taskType>
-    deleteTaskHandler: (taskID: number) => void
+    deleteTask: (taskID: string) => void
     changeFilter: (filter: filterValuesType) => void
+    addTask: (taskName: string) => void
+    changeStatus: (idTask: string, isDone: boolean) => void
 }
-export function Todolist({title, tasks, deleteTaskHandler, changeFilter}: TodolistProps) {
+export function Todolist({title, tasks, deleteTask, changeFilter, addTask, changeStatus}: TodolistProps) {
+    const [newTaskName, setNewTaskName] = useState('')
+    const [error, setError] = useState('')
 
-    const changeFilerHandlerAll = () => {changeFilter('all')}
-    const changeFilerHandlerActive = () => {changeFilter('active')}
-    const changeFilerHandlerCompleted = () => {changeFilter('completed')}
-
+    const changeFilerOnOllHandler = () => {changeFilter('all')}
+    const changeFilerOnActiveHandler = () => {changeFilter('active')}
+    const changeFilerOnCompletedHandler = () => {changeFilter('completed')}
+    const changeNewTaskNameHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setNewTaskName(e.currentTarget.value)
+        setError('')
+    }
+    const addTaskHandler = () => {
+        if (newTaskName.trim() === '') {
+            setError('Field is required')
+            return
+        }
+        addTask(newTaskName.trim())
+        setNewTaskName('')
+    }
+    const onEnterAddTaskHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.ctrlKey && e.code === 'Enter') {
+            addTaskHandler()
+        }
+    }
     return (
         <div>
             <h3>{title}</h3>
             <div>
-                <input type="text"/>
-                <button>+</button>
+                <input
+                    value={newTaskName}
+                    onChange={changeNewTaskNameHandler}
+                    onKeyPress={onEnterAddTaskHandler}
+                    type="text"
+                    className={error ? 'error': ''}
+                />
+                <button onClick={addTaskHandler}>+</button>
+                {error && <div className='errorMessage'>{error}</div>}
             </div>
             <ul>
                 {
-                    tasks.map(el => <li key={el.id}>
-                        <input type="checkbox" checked={el.isDone}/>{el.taskName}
-                        <button onClick={() => deleteTaskHandler(el.id)}>X</button>
-                    </li>)
+                    tasks.map(el => {
+                        const deleteTaskHandler = () => {
+                            deleteTask(el.id)
+                        }
+                        const changeStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
+                            changeStatus(el.id, e.currentTarget.checked)
+                        }
+
+                        return (
+                            <li key={el.id}>
+                                <input
+                                    type="checkbox"
+                                    checked={el.isDone}
+                                    onChange={changeStatusHandler}
+                                />{el.taskName}
+                                <button onClick={deleteTaskHandler}>X</button>
+                            </li>
+                        )
+                    })
                 }
             </ul>
-            <button onClick={changeFilerHandlerAll}>All</button>
-            <button onClick={changeFilerHandlerActive}>Active</button>
-            <button onClick={changeFilerHandlerCompleted}>Completed</button>
+            <button onClick={changeFilerOnOllHandler}>All</button>
+            <button onClick={changeFilerOnActiveHandler}>Active</button>
+            <button onClick={changeFilerOnCompletedHandler}>Completed</button>
         </div>
     )
 }
