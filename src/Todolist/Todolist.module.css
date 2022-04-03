@@ -1,0 +1,16 @@
+.error {
+    border: 2px solid #d50808;
+}
+.errorMessage {
+    color: #d50808;
+}
+.filter {
+    cursor: pointer;
+}
+.filterActive {
+    background-color: #6e497e;
+    color: azure;
+}
+.taskCompleted {
+    opacity: 0.5;
+}
