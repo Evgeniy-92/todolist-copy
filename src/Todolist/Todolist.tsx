@@ -1,11 +1,12 @@
 import React, {ChangeEvent} from "react";
-import {filterValuesType, taskType} from "../App";
+import {filterValuesType, TaskType} from "../App";
 import style from "./Todolist.module.css"
 import {AddItemForms} from "../AddItemFors/AddItemForms";
+import {EditableSpan} from "../EditableSpan/EditableSpan";
 
 type TodolistProps = {
     title: string
-    tasks: Array<taskType>
+    tasks: Array<TaskType>
     deleteTask: (taskID: string, todolistID: string) => void
     changeFilter: (filter: filterValuesType, todolistID: string) => void
     addTask: (taskName: string, todolistID: string) => void
@@ -13,10 +14,13 @@ type TodolistProps = {
     filter: filterValuesType
     todolistID: string
     removeTodolist: (todolistID: string) => void
+    changeTaskTitle: (newTaskName: string, taskID: string, todolistID: string) => void
+    changeTodolistTitle: (newTodolistTitle: string, todolistID: string) => void
 }
 export function Todolist({title, tasks, deleteTask, changeFilter,
                              addTask, changeStatus, filter,
-                             todolistID, removeTodolist}: TodolistProps) {
+                             todolistID, removeTodolist, changeTaskTitle,
+                             changeTodolistTitle}: TodolistProps) {
     const changeFilerOnOllHandler = () => {changeFilter('all', todolistID)}
     const changeFilerOnActiveHandler = () => {changeFilter('active', todolistID)}
     const changeFilerOnCompletedHandler = () => {changeFilter('completed', todolistID)}
@@ -26,9 +30,15 @@ export function Todolist({title, tasks, deleteTask, changeFilter,
     const addTaskHandler = (taskName: string) => {
         addTask(taskName, todolistID)
     }
+    const changeTodolistTitleHandler = (newTitle: string) => {
+        changeTodolistTitle(newTitle, todolistID)
+    }
     return (
         <div>
-            <h3>{title}<button onClick={removeTodolistHandler}>X</button></h3>
+            <h3>
+                <EditableSpan title={title} changeTitleToState={changeTodolistTitleHandler}/>
+                <button onClick={removeTodolistHandler}>X</button>
+            </h3>
             <AddItemForms  addItem={addTaskHandler}/>
             <ul>
                 {
@@ -39,6 +49,9 @@ export function Todolist({title, tasks, deleteTask, changeFilter,
                         const changeStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
                             changeStatus(el.id, e.currentTarget.checked, todolistID)
                         }
+                        const changeTitleHandler = (newTitle: string) => {
+                            changeTaskTitle(newTitle, el.id, todolistID)
+                        }
 
                         return (
                             <li key={el.id} className={el.isDone ? style.taskCompleted : ''}>
@@ -46,7 +59,8 @@ export function Todolist({title, tasks, deleteTask, changeFilter,
                                     type="checkbox"
                                     checked={el.isDone}
                                     onChange={changeStatusHandler}
-                                />{el.taskName}
+                                />
+                                <EditableSpan title={el.taskName} changeTitleToState={changeTitleHandler}/>
                                 <button onClick={deleteTaskHandler}>X</button>
                             </li>
                         )
@@ -59,3 +73,4 @@ export function Todolist({title, tasks, deleteTask, changeFilter,
         </div>
     )
 }
+
