@@ -1,6 +1,7 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from "react";
+import React, {ChangeEvent} from "react";
 import {filterValuesType, taskType} from "../App";
 import style from "./Todolist.module.css"
+import {AddItemForms} from "../AddItemFors/AddItemForms";
 
 type TodolistProps = {
     title: string
@@ -16,45 +17,19 @@ type TodolistProps = {
 export function Todolist({title, tasks, deleteTask, changeFilter,
                              addTask, changeStatus, filter,
                              todolistID, removeTodolist}: TodolistProps) {
-    const [newTaskName, setNewTaskName] = useState('')
-    const [error, setError] = useState<string>('')
     const changeFilerOnOllHandler = () => {changeFilter('all', todolistID)}
     const changeFilerOnActiveHandler = () => {changeFilter('active', todolistID)}
     const changeFilerOnCompletedHandler = () => {changeFilter('completed', todolistID)}
-    const changeNewTaskNameHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setNewTaskName(e.currentTarget.value)
-        setError('')
-    }
-    const addTaskHandler = () => {
-        if (newTaskName.trim() === '') {
-            setError('Field is required')
-            return
-        }
-        addTask(newTaskName.trim(), todolistID)
-        setNewTaskName('')
-    }
-    const onEnterAddTaskHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.ctrlKey && e.code === 'Enter') {
-            addTaskHandler()
-        }
-    }
     const removeTodolistHandler = () => {
         removeTodolist(todolistID)
+    }
+    const addTaskHandler = (taskName: string) => {
+        addTask(taskName, todolistID)
     }
     return (
         <div>
             <h3>{title}<button onClick={removeTodolistHandler}>X</button></h3>
-            <div>
-                <input
-                    value={newTaskName}
-                    onChange={changeNewTaskNameHandler}
-                    onKeyPress={onEnterAddTaskHandler}
-                    type="text"
-                    className={error ? style.error : ''}
-                />
-                <button onClick={addTaskHandler}>+</button>
-                {error && <div className={style.errorMessage}>{error}</div>}
-            </div>
+            <AddItemForms  addItem={addTaskHandler}/>
             <ul>
                 {
                     tasks.map(el => {
